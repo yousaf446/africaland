@@ -15,6 +15,7 @@
 <body>
 <?php include_once 'header.php'; ?>
 <div id="map"></div>
+<div id="open-street-map"></div>
 <div class="col-lg-4 search-top-pad" id="search">
     <div class="input-group">
         <input type="text" class="form-control" id="search-input" placeholder="Search" onkeyup="findSuggestions()">
@@ -22,6 +23,11 @@
         <button class="btn btn-default" type="button" onclick="filterSuggestion()">Go!</button>
       </span>
     </div><!-- /input-group -->
+    <br/>
+    <div class="alert alert-info" id="not-found" style="display:none">
+        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <strong>Sorry</strong><p> We couldn't find any results for</p><br/><b id="input-string"></b>
+    </div>
 </div><!-- /.col-lg-6 -->
 <div class="panel panel-default panel-fix-bottom col-md-12" id="3-words-panel">
     <div class="panel-heading panel-heading-background-image" role="tab" id="headingOne">
