@@ -52,7 +52,7 @@ function loadMap() {
     marker = new google.maps.Marker({
         map: map,
     });
-    destination = new google.maps.LatLng(pyrmont.lat, pyrmont.lng);
+    destination = pyrmont.lat + "," + pyrmont.lng;
     infowindow = new google.maps.InfoWindow();
 
     var search = document.getElementById('search');
@@ -128,6 +128,7 @@ function geocodeAddress() {
             map.setCenter(results[0].geometry.location);
             marker.setPosition(results[0].geometry.location);
             reverseGeoCode3WordsGMaps(results[0].geometry.location);
+            destination = results[0].geometry.location.lat() + "," + results[0].geometry.location.lng();
         }
     });
 }
@@ -219,6 +220,7 @@ function filterSuggestion() {
 function plotMarker(geometry) {
     map.setCenter(geometry);
     marker.setPosition(geometry);
+    destination = geometry.lat() + "," + geometry.lng();
 }
 
 function reverseGeoCode3Words(location) {
@@ -227,7 +229,6 @@ function reverseGeoCode3Words(location) {
         if(response.status.status == "200") {
           $("#3-words").html(response.words);
             updateFoot(response.words);
-            document.getElementById('search-input').value = response.words;
         }
     });
 
@@ -372,6 +373,10 @@ function setMenuXY(caurrentLatLng){
 
     $('.contextmenu').css('left',x  );
     $('.contextmenu').css('top',y );
+}
+
+function getDirections() {
+    window.open("https://www.google.com/maps?saddr=My+Location&daddr="+destination, "_blank");
 }
 
 google.maps.event.addDomListener(window, 'load', loadMap);

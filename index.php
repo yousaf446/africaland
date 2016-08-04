@@ -38,6 +38,7 @@
     </div>
     <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
         <div class="panel-body" id="3-words-body">
+            <button class="btn btn-default col-md-12" onclick="getDirections()">Get Directions</button>
         </div>
     </div>
 </div>
