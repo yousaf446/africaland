@@ -22,7 +22,13 @@
       <span class="input-group-btn">
         <button class="btn btn-default" type="button" onclick="filterSuggestion()">Go!</button>
       </span>
+      <span class="input-group-btn left-pad">
+          <a href="#" class="btn btn-info" data-toggle="popover" data-container="body" data-placement="right" data-html="true">
+              <span class="glyphicon glyphicon-question-sign"></span>
+          </a>
+      </span>
     </div><!-- /input-group -->
+
     <br/>
     <div class="alert alert-info" id="not-found" style="display:none">
         <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
@@ -42,6 +48,30 @@
         </div>
     </div>
 </div>
+<div id="popover-content" class="hide">
+    <strong>Search for anything at all, for example:</strong><br>
+    <a href="limit.broom.flip" class="example">limit.broom.flip <span class="red-emp">3 words</span></a><br>
+    <a href="Notting Hill, London" class="example">Notting Hill, London <span class="red-emp">any location</span></a>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="langModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">Change Language</h4>
+            </div>
+            <div class="modal-body">
+                <label Select Language></label><select class="control-label" id="langCombo"></select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveLanguage()">Save Language</button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 </body>
 
 <!-- Latest compiled and minified JQuery -->

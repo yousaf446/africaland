@@ -3,13 +3,15 @@ var marker;
 var infowindow;
 var geocoder = new google.maps.Geocoder();
 var suggestions = [];
-var w3w_key = "ABN6G5I3";
+var w3w_key = "LKJ3X9BQ";
 var selectedID = "";
 var pyrmont = {lat: -33.867, lng: 151.195};
 var mapType = 'map';
 var contextmenuDir;
 var pinDrag = true;
 var destination;
+var language = "en";
+var language_array = [];
 function loadMap() {
 
     var mapTypeStyle = google.maps.MapTypeControlStyle.HORIZONTAL_BAR;
@@ -51,6 +53,7 @@ function loadMap() {
 
     marker = new google.maps.Marker({
         map: map,
+        position: pyrmont
     });
     destination = pyrmont.lat + "," + pyrmont.lng;
     infowindow = new google.maps.InfoWindow();
@@ -99,6 +102,16 @@ function loadMap() {
     });
 
     google.maps.event.addListener(map, "rightclick",function(event){showContextMenu(event.latLng);});
+
+    google.maps.event.addListener(map, "zoom_changed",function(event){
+        reverseGeoCode3WordsGMaps(this.getCenter());
+    });
+
+    google.maps.event.addListener(map, "dragend",function(event){
+        reverseGeoCode3WordsGMaps(this.getCenter());
+    });
+
+    getLanguages();
 }
 
 function googleSuggestions() {
@@ -118,7 +131,7 @@ function googleSuggestions() {
     };
     var input = document.getElementById('search-input').value;
     var service = new google.maps.places.AutocompleteService();
-    service.getQueryPredictions({ input: input }, saveSuggestions);
+    service.getQueryPredictions({ input: input, language: language }, saveSuggestions);
 }
 
 function geocodeAddress() {
@@ -135,7 +148,7 @@ function geocodeAddress() {
 
 function what3wordsSuggestions() {
     var input = document.getElementById('search-input').value;
-    $.get("https://api.what3words.com/v2/autosuggest?addr="+input+"&lang=en&key="+w3w_key, function(response) {
+    $.get("https://api.what3words.com/v2/autosuggest?addr="+input+"&lang="+language+"&key="+w3w_key, function(response) {
         if(response.status.status == "200") {
             if(response.suggestions != undefined) {
                 response.suggestions.forEach(function (suggestion) {
@@ -223,9 +236,15 @@ function plotMarker(geometry) {
     destination = geometry.lat() + "," + geometry.lng();
 }
 
+function plotMarkerW3W(geometry) {
+    map.setCenter(geometry);
+    marker.setPosition(geometry);
+    destination = geometry.lat + "," + geometry.lng;
+}
+
 function reverseGeoCode3Words(location) {
     var coords = location.lat+","+location.lng;
-    $.get("https://api.what3words.com/v2/reverse?coords="+coords+"&display=full&format=json&key="+w3w_key, function(response) {
+    $.get("https://api.what3words.com/v2/reverse?coords="+coords+"&display=full&format=json&lang="+language+"&key="+w3w_key, function(response) {
         if(response.status.status == "200") {
           $("#3-words").html(response.words);
             updateFoot(response.words);
@@ -236,10 +255,11 @@ function reverseGeoCode3Words(location) {
 
 function reverseGeoCode3WordsGMaps(location) {
     var coords = location.lat()+","+location.lng();
-    $.get("https://api.what3words.com/v2/reverse?coords="+coords+"&display=full&format=json&key="+w3w_key, function(response) {
+    $.get("https://api.what3words.com/v2/reverse?coords="+coords+"&display=full&format=json&lang="+language+"&key="+w3w_key, function(response) {
         if(response.status.status == "200") {
             $("#3-words").html(response.words);
             updateFoot(response.words);
+            plotMarkerW3W(location);
             document.getElementById('search-input').value = response.words;
         }
     });
@@ -277,10 +297,10 @@ function HideContextMenu() {
 }
 
 function forwardGeoCode3Words(address) {
-    $.get("https://api.what3words.com/v2/forward?addr="+address+"&display=full&format=json&key="+w3w_key, function(response) {
+    $.get("https://api.what3words.com/v2/forward?addr="+address+"&display=full&format=json&lang="+language+"&key="+w3w_key, function(response) {
         if(response.status.status == "200") {
             if(response.geometry != undefined) {
-                plotMarker(response.geometry);
+                plotMarkerW3W(response.geometry);
                 updateFoot(address);
             } else {
                 $("#input-string").html(address);
@@ -332,6 +352,7 @@ function showContextMenu(currentLatLng) {
     if(pinDrag) content += '<a id="menu2"><div class="context" href="javascript:void(0)" onclick="PinDragCheck(false)">Lock Pin<\/div><\/a>';
     else content += '<a id="menu3" href="javascript:void(0)" onclick="PinDragCheck(true)"><div class="context">UnLock Pin<\/div><\/a>';
     content += '<a id="menu4" href="https://www.google.com/maps?saddr=My+Location&daddr='+destination+'" onclick="HideContextMenu()" target="_blank"><div class="context">Directions To Pin<\/div><\/a>';
+    content += '<a id="menu5" href="javascript:void(0)" data-toggle="modal" data-target="#langModal" onclick="HideContextMenu()"><div class="context">Change Language<\/div><\/a>';
 
     contextmenuDir.innerHTML = content;
     $(map.getDiv()).append(contextmenuDir);
@@ -378,5 +399,33 @@ function setMenuXY(caurrentLatLng){
 function getDirections() {
     window.open("https://www.google.com/maps?saddr=My+Location&daddr="+destination, "_blank");
 }
+
+function getLanguages() {
+    $.get("https://api.what3words.com/v2/languages?format=json&key="+w3w_key, function(response) {
+        language_array = response.languages;
+        var lang_combo = "<option value=''>Select One</option>";
+
+        for(var i in language_array) {
+            lang_combo += "<option value='"+language_array[i].code+"'>"+language_array[i].name+"</option>";
+        }
+
+        $("#langCombo").html(lang_combo);
+    });
+}
+function saveLanguage() {
+    language = $("#langCombo").val();
+    reverseGeoCode3WordsGMaps(map.getCenter());
+    $("#langModal").modal('hide');
+    contextmenuDir.style.visibility = "hidden";
+}
+
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover({
+        html: true,
+        content: function() {
+            return $('#popover-content').html();
+        }
+    });
+});
 
 google.maps.event.addDomListener(window, 'load', loadMap);

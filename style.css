@@ -73,3 +73,19 @@
 .contextmenu div{
     padding-left: 5px
 }
+
+.popover {
+    max-width:300px;
+}
+
+.red-emp {
+    color: red;
+}
+
+.left-pad {
+    padding-left: 10px;
+}
+
+.right-pad {
+    padding-right: 10px;
+}
