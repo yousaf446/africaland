@@ -35,6 +35,12 @@
         <strong>Sorry</strong><p> We couldn't find any results for</p><br/><b id="input-string"></b>
     </div>
 </div><!-- /.col-lg-6 -->
+<div id="pin-btns">
+    <button class="btn btn-primary" id="lock-btn" onclick="PinDragCheck(false)">Lock Pin</button>
+    <button class="btn btn-primary" style="display:none" id="unlock-btn" onclick="PinDragCheck(true)">UnLock Pin</button>
+    <br/>
+    <button class="btn btn-primary find-top-margin" style="display:none" id="find-btn" onclick="setPinCenter()">Find Pin</button>
+</div>
 <div class="panel panel-default panel-fix-bottom col-md-12" id="3-words-panel">
     <div class="panel-heading panel-heading-background-image" role="tab" id="headingOne">
         <h4 class="panel-title panel-title-text">
@@ -42,7 +48,7 @@
             </a>
         </h4>
     </div>
-    <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
         <div class="panel-body" id="3-words-body">
             <button class="btn btn-default col-md-12" onclick="getDirections()">Get Directions</button>
         </div>
@@ -82,6 +88,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyA7xY6JgrR-hAOLs1ZmZU9vCoFNb_YQ7qI"></script>
+
+<script type="text/javascript" src="grid.js"></script>
 
 <script type="text/javascript" src="script.js"></script>
 </HTMl>

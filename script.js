@@ -61,6 +61,9 @@ function loadMap() {
     var search = document.getElementById('search');
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(search);
 
+    var pin_btns = document.getElementById('pin-btns');
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(pin_btns);
+
     map.attributionControl = document.createElement('div');
     map.attributionControl.id = 'attribution-control';
     map.controls[google.maps.ControlPosition.BOTTOM_RIGHT].push(map.attributionControl);
@@ -105,13 +108,17 @@ function loadMap() {
 
     google.maps.event.addListener(map, "zoom_changed",function(event){
         reverseGeoCode3WordsGMaps(this.getCenter());
+        checkFindPin(this.getBounds());
     });
 
     google.maps.event.addListener(map, "dragend",function(event){
         reverseGeoCode3WordsGMaps(this.getCenter());
+        checkFindPin(this.getBounds());
     });
 
     getLanguages();
+
+    grid = new Graticule(map);
 }
 
 function googleSuggestions() {
@@ -237,9 +244,12 @@ function plotMarker(geometry) {
 }
 
 function plotMarkerW3W(geometry) {
-    map.setCenter(geometry);
-    marker.setPosition(geometry);
-    destination = geometry.lat + "," + geometry.lng;
+    console.log(geometry);
+    if(!pinDrag) {
+        map.setCenter(geometry);
+        marker.setPosition(geometry);
+    }
+    destination = geometry.lat() + "," + geometry.lng();
 }
 
 function reverseGeoCode3Words(location) {
@@ -285,9 +295,14 @@ function PinDragCheck(check) {
     if(pinDrag) {
         $("#menu2").show();
         $("#menu3").hide();
+        $("#lock-btn").show();
+        $("#unlock-btn").hide();
     } else {
         $("#menu2").hide();
         $("#menu3").show();
+        $("#unlock-btn").show();
+        $("#lock-btn").hide();
+        map.setCenter(marker.getPosition());
     }
     contextmenuDir.style.visibility = "hidden";
 }
@@ -404,12 +419,24 @@ function getLanguages() {
     $.get("https://api.what3words.com/v2/languages?format=json&key="+w3w_key, function(response) {
         language_array = response.languages;
         var lang_combo = "<option value=''>Select One</option>";
+        var dropdown = "";
+        var specialClass = "";
+        var selected = "";
 
         for(var i in language_array) {
-            lang_combo += "<option value='"+language_array[i].code+"'>"+language_array[i].name+"</option>";
+            if(language_array[i].code == 'en') {
+                specialClass = 'active';
+                selected = "selected";
+            } else {
+                specialClass = "";
+                selected = "";
+            }
+            lang_combo += "<option value='"+language_array[i].code+"' "+selected+">"+language_array[i].name+"</option>";
+            dropdown += "<li class='"+specialClass+"' id='lang_"+i+"'><a href='javascript:void(0)' onclick='saveLanguageDropDown("+i+")'>"+language_array[i].name+"</a></li>";
         }
 
         $("#langCombo").html(lang_combo);
+        $("#langDropDown").html(dropdown);
     });
 }
 function saveLanguage() {
@@ -417,7 +444,37 @@ function saveLanguage() {
     reverseGeoCode3WordsGMaps(map.getCenter());
     $("#langModal").modal('hide');
     contextmenuDir.style.visibility = "hidden";
+    for(var i in language_array) {
+        if(language_array[i].code == language) {
+            $("#lang_"+i).addClass("active");
+        } else {
+            $("#lang_"+i).removeClass("active");
+        }
+    }
 }
+
+function saveLanguageDropDown(count) {
+    for(var i in language_array) {
+        $("#lang_"+i).removeClass("active");
+    }
+    $("#lang_"+count).addClass("active");
+    $("#langCombo").val(language_array[count].code);
+    language = language_array[count].code;
+    reverseGeoCode3WordsGMaps(map.getCenter());
+}
+
+function checkFindPin() {
+    if(map.getBounds().contains(marker.getPosition())) {
+        $("#find-btn").hide();
+    } else {
+        $("#find-btn").show();
+    }
+}
+
+function setPinCenter() {
+    marker.setPosition(map.getCenter());
+}
+
 
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover({
