@@ -8,7 +8,7 @@ var selectedID = "";
 var pyrmont = {lat: -33.867, lng: 151.195};
 var mapType = 'map';
 var contextmenuDir;
-var pinDrag = true;
+var pinDrag = false;
 var destination;
 var language = "en";
 var language_array = [];
@@ -50,9 +50,19 @@ function loadMap() {
     google.maps.visualRefresh = true;
 
     map = new google.maps.Map(document.getElementById('map'), mapOptions);
+    $('<div/>').addClass('centerMarker').appendTo(map.getDiv());
 
+    var mark_image = new google.maps.MarkerImage(
+        "images/map-marker.png",
+        null, /* size is determined at runtime */
+        null, /* origin is 0,0 */
+        null, /* anchor is bottom center of the scaled image */
+        new google.maps.Size(64, 64)
+    );
     marker = new google.maps.Marker({
         map: map,
+        visible: false,
+        icon: mark_image,
         position: pyrmont
     });
     destination = pyrmont.lat + "," + pyrmont.lng;
@@ -108,12 +118,12 @@ function loadMap() {
 
     google.maps.event.addListener(map, "zoom_changed",function(event){
         reverseGeoCode3WordsGMaps(this.getCenter());
-        checkFindPin(this.getBounds());
+        if(pinDrag) checkFindPin(this.getBounds());
     });
 
     google.maps.event.addListener(map, "dragend",function(event){
         reverseGeoCode3WordsGMaps(this.getCenter());
-        checkFindPin(this.getBounds());
+        if(pinDrag) checkFindPin(this.getBounds());
     });
 
     getLanguages();
@@ -284,27 +294,33 @@ function PlacePin(lat, lng) {
     }
     else {
         map.setCenter(location);
-        marker.setPosition(map.getCenter());
     }
     contextmenuDir.style.visibility = "hidden";
 }
 
-function PinDragCheck(check) {
-    console.log(check);
+function PinDragCheck(check, end) {
     pinDrag = check;
+    console.log(pinDrag);
+    if(end != 'front') end = 'back';
     if(pinDrag) {
-        $("#menu2").show();
-        $("#menu3").hide();
-        $("#lock-btn").show();
-        $("#unlock-btn").hide();
-    } else {
         $("#menu2").hide();
         $("#menu3").show();
         $("#unlock-btn").show();
         $("#lock-btn").hide();
+        marker.setPosition(map.getCenter());
+        marker.setVisible(true);
+        $('#map div.centerMarker').remove();
+    } else {
+        $("#menu2").show();
+        $("#menu3").hide();
+        $("#lock-btn").show();
+        $("#unlock-btn").hide();
+        $('<div/>').addClass('centerMarker').appendTo(map.getDiv());
+        marker.setVisible(false);
         map.setCenter(marker.getPosition());
     }
-    contextmenuDir.style.visibility = "hidden";
+    if(end == 'back')
+        contextmenuDir.style.visibility = "hidden";
 }
 
 function HideContextMenu() {
@@ -364,8 +380,8 @@ function showContextMenu(currentLatLng) {
     contextmenuDir = document.createElement("div");
     contextmenuDir.className  = 'contextmenu';
     var content = '<a id="menu1" href="javascript:void(0)" onclick="PlacePin('+currentLatLng.lat()+','+currentLatLng.lng()+')"><div class="context">Place Pin Here<\/div><\/a>';
-    if(pinDrag) content += '<a id="menu2"><div class="context" href="javascript:void(0)" onclick="PinDragCheck(false)">Lock Pin<\/div><\/a>';
-    else content += '<a id="menu3" href="javascript:void(0)" onclick="PinDragCheck(true)"><div class="context">UnLock Pin<\/div><\/a>';
+    if(!pinDrag) content += '<a id="menu2"><div class="context" href="javascript:void(0)" onclick="PinDragCheck(true)">Lock Pin<\/div><\/a>';
+    else content += '<a id="menu3" href="javascript:void(0)" onclick="PinDragCheck(false)"><div class="context">UnLock Pin<\/div><\/a>';
     content += '<a id="menu4" href="https://www.google.com/maps?saddr=My+Location&daddr='+destination+'" onclick="HideContextMenu()" target="_blank"><div class="context">Directions To Pin<\/div><\/a>';
     content += '<a id="menu5" href="javascript:void(0)" data-toggle="modal" data-target="#langModal" onclick="HideContextMenu()"><div class="context">Change Language<\/div><\/a>';
 

@@ -36,8 +36,8 @@
     </div>
 </div><!-- /.col-lg-6 -->
 <div id="pin-btns">
-    <button class="btn btn-primary" id="lock-btn" onclick="PinDragCheck(false)">Lock Pin</button>
-    <button class="btn btn-primary" style="display:none" id="unlock-btn" onclick="PinDragCheck(true)">UnLock Pin</button>
+    <button class="btn btn-primary" id="lock-btn" onclick="PinDragCheck(true, 'front')">Lock Pin</button>
+    <button class="btn btn-primary" style="display:none" id="unlock-btn" onclick="PinDragCheck(false, 'front')">UnLock Pin</button>
     <br/>
     <button class="btn btn-primary find-top-margin" style="display:none" id="find-btn" onclick="setPinCenter()">Find Pin</button>
 </div>

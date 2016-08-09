@@ -97,3 +97,16 @@
 .nav-bar-dropdown {
     color: white !important;
 }
+
+#map .centerMarker{
+    position:absolute;
+    /*url of the marker*/
+    background:url(images/map-marker.png) no-repeat;
+    /*center the marker*/
+    top:37.5%;left:47%;
+    z-index:1;
+    /*size of the image*/
+    height:64px;
+    width:64px;
+    cursor:pointer;
+}
