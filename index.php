@@ -18,9 +18,9 @@
 <div id="open-street-map"></div>
 <div class="col-lg-4 search-top-pad" id="search">
     <div class="input-group">
-        <input type="text" class="form-control" id="search-input" placeholder="Search" onkeyup="findSuggestions()">
+        <input type="text" class="form-control" id="search-input" placeholder="Search" onkeyup="findSuggestions(event)">
       <span class="input-group-btn">
-        <button class="btn btn-default" type="button" onclick="filterSuggestion()">Go!</button>
+        <button class="btn btn-default" type="button" id="go-btn" onclick="filterSuggestion()">Go!</button>
       </span>
       <span class="input-group-btn left-pad">
           <a href="#" class="btn btn-info" data-toggle="popover" data-container="body" data-placement="right" data-html="true">
@@ -31,7 +31,7 @@
 
     <br/>
     <div class="alert alert-info" id="not-found" style="display:none">
-        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        <a href="javascript:void(0)" onclick="closeNotFound()" class="close" aria-label="close">&times;</a>
         <strong>Sorry</strong><p> We couldn't find any results for</p><br/><b id="input-string"></b>
     </div>
 </div><!-- /.col-lg-6 -->

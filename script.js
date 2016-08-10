@@ -117,14 +117,14 @@ function loadMap() {
     google.maps.event.addListener(map, "rightclick",function(event){showContextMenu(event.latLng);});
 
     google.maps.event.addListener(map, "zoom_changed",function(event){
-        if(pinDrag) {
+        if(!pinDrag) {
             reverseGeoCode3WordsGMaps(this.getCenter());
             checkFindPin(this.getBounds());
         }
     });
 
     google.maps.event.addListener(map, "dragend",function(event){
-        if(pinDrag) {
+        if(!pinDrag) {
             reverseGeoCode3WordsGMaps(this.getCenter());
             checkFindPin(this.getBounds());
         }
@@ -188,12 +188,15 @@ function what3wordsSuggestions() {
     });
 }
 
-function findSuggestions() {
+function findSuggestions(event) {
     for(var i in suggestions) {
         suggestions[i] = null
     }
     suggestions.length = 0;
     googleSuggestions();
+    if(event.keyCode == 13){
+        $( "#go-btn" ).trigger( "click" );
+    }
     //what3wordsSuggestions();
 }
 
@@ -258,12 +261,11 @@ function plotMarker(geometry) {
 }
 
 function plotMarkerW3W(geometry) {
-    console.log(geometry);
     if(!pinDrag) {
         map.setCenter(geometry);
         marker.setPosition(geometry);
     }
-    destination = geometry.lat() + "," + geometry.lng();
+    destination = geometry.lat + "," + geometry.lng;
 }
 
 function reverseGeoCode3Words(location) {
@@ -284,7 +286,7 @@ function reverseGeoCode3WordsGMaps(location) {
             $("#3-words").html(response.words);
             updateFoot(response.words);
             plotMarkerW3W(location);
-            document.getElementById('search-input').value = response.words;
+            //document.getElementById('search-input').value = response.words;
         }
     });
 
@@ -304,7 +306,6 @@ function PlacePin(lat, lng) {
 
 function PinDragCheck(check, end) {
     pinDrag = check;
-    console.log(pinDrag);
     if(end != 'front') end = 'back';
     if(pinDrag) {
         $("#menu2").hide();
@@ -335,8 +336,9 @@ function forwardGeoCode3Words(address) {
     $.get("https://api.what3words.com/v2/forward?addr="+address+"&display=full&format=json&lang="+language+"&key="+w3w_key, function(response) {
         if(response.status.status == "200") {
             if(response.geometry != undefined) {
-                plotMarkerW3W(response.geometry);
                 updateFoot(address);
+                plotMarkerW3W(response.geometry);
+                $("#not-found").hide();
             } else {
                 $("#input-string").html(address);
                 $("#not-found").show();
@@ -344,6 +346,10 @@ function forwardGeoCode3Words(address) {
         }
     });
 
+}
+
+function closeNotFound() {
+    $("#not-found").hide();
 }
 
 function updateOverlays() {
