@@ -117,13 +117,17 @@ function loadMap() {
     google.maps.event.addListener(map, "rightclick",function(event){showContextMenu(event.latLng);});
 
     google.maps.event.addListener(map, "zoom_changed",function(event){
-        reverseGeoCode3WordsGMaps(this.getCenter());
-        if(pinDrag) checkFindPin(this.getBounds());
+        if(pinDrag) {
+            reverseGeoCode3WordsGMaps(this.getCenter());
+            checkFindPin(this.getBounds());
+        }
     });
 
     google.maps.event.addListener(map, "dragend",function(event){
-        reverseGeoCode3WordsGMaps(this.getCenter());
-        if(pinDrag) checkFindPin(this.getBounds());
+        if(pinDrag) {
+            reverseGeoCode3WordsGMaps(this.getCenter());
+            checkFindPin(this.getBounds());
+        }
     });
 
     getLanguages();

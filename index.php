@@ -77,7 +77,6 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
-
 </body>
 
 <!-- Latest compiled and minified JQuery -->
